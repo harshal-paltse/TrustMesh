@@ -47,7 +47,7 @@ dependencies {
     // Redis Client
     implementation("redis.clients:jedis:5.1.2")
 
-    // Argon2 Password Hashing
+    // Argon2 Password Hashing 
     implementation("de.mkammerer:argon2-jvm:2.11")
 
     // Logging
