@@ -58,6 +58,6 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.0.21")
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinComp> {
     kotlinOptions.jvmTarget = "17"
 }
