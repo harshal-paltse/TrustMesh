@@ -50,7 +50,6 @@ dependencies {
     // Argon2 Password Hashing 
     implementation("de.mkammerer:argon2-jvm:2.11")
 
-    // Logging
     implementation("ch.qos.logback:logback-classic:1.4.14")
 
     // Testing
