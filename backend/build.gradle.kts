@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.trustmesh"
-version = "1.0.0.0"
+version = "1.0.0"
 
 application {
     mainClass.set("com.trustmesh.ApplicationKt")
