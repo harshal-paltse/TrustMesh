@@ -37,6 +37,8 @@ services:
       JWT_SECRET: super-secure-jwt-secret-key-12345678
       JWT_ISSUER: http://localhost:8080/
       JWT_AUDIENCE: http://localhost:8080/
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-rzp_test_placeholder}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET:-rzp_secret_placeholder}
     depends_on:
       - postgres
       - redis
