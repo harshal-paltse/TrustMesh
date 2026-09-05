@@ -88,6 +88,9 @@ dependencies {
     // Firebase Messaging (FCM)
     implementation("com.google.firebase:firebase-messaging:24.0.3")
 
+    // Razorpay Checkout
+    implementation(libs.razorpay.checkout)
+
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
@@ -98,3 +101,6 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
+
+
+

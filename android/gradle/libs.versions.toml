@@ -24,6 +24,7 @@ turbine = "1.0.0"
 espresso = "3.6.1"
 androidJunit = "1.2.1"
 plaid = "4.4.0"
+razorpay = "1.6.40"
 
 [libraries]
 # AndroidX Core & Lifecycle
@@ -80,6 +81,9 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 
 # Plaid Sandbox
 plaid-link = { group = "com.plaid.link", name = "sdk-core", version.ref = "plaid" }
+
+# Razorpay Standard Checkout
+razorpay-checkout = { group = "com.razorpay", name = "checkout", version.ref = "razorpay" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
