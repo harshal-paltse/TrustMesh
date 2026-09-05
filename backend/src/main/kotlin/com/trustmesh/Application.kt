@@ -21,6 +21,7 @@ import com.trustmesh.agent.agentRoutes
 import com.trustmesh.transaction.transactionRoutes
 import com.trustmesh.ledger.ledgerRoutes
 import com.trustmesh.merchant.merchantRoutes
+import com.trustmesh.payment.paymentRoutes
 
 fun main() {
     embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
@@ -69,7 +70,8 @@ fun Application.module() {
                 com.trustmesh.db.EscrowItems,
                 com.trustmesh.db.LedgerEntries,
                 com.trustmesh.db.LinkedAccounts,
-                com.trustmesh.db.Merchants
+                com.trustmesh.db.Merchants,
+                com.trustmesh.db.PaymentOrders
             )
             
             // Seed default FinGuru profiles if empty
@@ -175,6 +177,7 @@ fun Application.module() {
             transactionRoutes()
             ledgerRoutes()
             merchantRoutes()
+            paymentRoutes()
         }
     }
 }
