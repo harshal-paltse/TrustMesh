@@ -3,7 +3,9 @@ package com.trustmesh.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trustmesh.domain.model.LinkedAccount
+import com.trustmesh.domain.model.PaymentOrder
 import com.trustmesh.domain.repository.AccountRepository
+import com.trustmesh.domain.repository.PaymentRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AccountsViewModel @Inject constructor(
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val paymentRepository: PaymentRepository
 ) : ViewModel() {
 
     val accounts: StateFlow<List<LinkedAccount>> = accountRepository.getLinkedAccounts()
@@ -26,6 +29,9 @@ class AccountsViewModel @Inject constructor(
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
+
+    private val _paymentSuccessMessage = MutableStateFlow<String?>(null)
+    val paymentSuccessMessage: StateFlow<String?> = _paymentSuccessMessage.asStateFlow()
 
     fun syncAccounts() {
         viewModelScope.launch {
@@ -56,7 +62,59 @@ class AccountsViewModel @Inject constructor(
         }
     }
 
+    fun initiateRazorpayOrder(
+        amountInRupees: Double,
+        agentId: String? = null,
+        onReady: (PaymentOrder) -> Unit
+    ) {
+        viewModelScope.launch {
+            _loading.value = true
+            _error.value = null
+            paymentRepository.createPaymentOrder(amountInRupees = amountInRupees, agentId = agentId)
+                .onSuccess { order ->
+                    _loading.value = false
+                    onReady(order)
+                }
+                .onFailure {
+                    _loading.value = false
+                    _error.value = it.message ?: "Failed to initiate Razorpay order"
+                }
+        }
+    }
+
+    fun verifyRazorpayPayment(
+        orderId: String,
+        paymentId: String,
+        signature: String,
+        agentId: String? = null,
+        onSuccess: () -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            _loading.value = true
+            _error.value = null
+            paymentRepository.verifyPayment(
+                razorpayOrderId = orderId,
+                razorpayPaymentId = paymentId,
+                razorpaySignature = signature,
+                agentId = agentId
+            ).onSuccess {
+                _loading.value = false
+                _paymentSuccessMessage.value = "Payment verified & added to reserve! ID: $paymentId"
+                accountRepository.syncAccounts()
+                onSuccess()
+            }.onFailure {
+                _loading.value = false
+                _error.value = it.message ?: "Payment signature verification failed"
+            }
+        }
+    }
+
+    fun clearPaymentSuccess() {
+        _paymentSuccessMessage.value = null
+    }
+
     fun clearError() {
         _error.value = null
     }
 }
+

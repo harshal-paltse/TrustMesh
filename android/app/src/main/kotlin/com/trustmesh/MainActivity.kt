@@ -27,10 +27,14 @@ import com.trustmesh.designsystem.theme.TrustMeshTheme
 import com.trustmesh.presentation.navigation.Screen
 import com.trustmesh.presentation.screen.*
 import com.trustmesh.presentation.viewmodel.*
+import com.razorpay.Checkout
+import com.razorpay.PaymentData
+import com.razorpay.PaymentResultWithDataListener
+import org.json.JSONObject
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : FragmentActivity() {
+class MainActivity : FragmentActivity(), PaymentResultWithDataListener {
 
     private val authViewModel: AuthViewModel by viewModels()
     private val dashboardViewModel: DashboardViewModel by viewModels()
@@ -41,6 +45,9 @@ class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Preload Razorpay checkout resources for instant rendering
+        Checkout.preload(applicationContext)
+
         setContent {
             val isDark by authViewModel.isDarkTheme.collectAsState()
             TrustMeshTheme(darkTheme = isDark) {
@@ -318,20 +325,36 @@ class MainActivity : FragmentActivity() {
 
                 composable<Screen.FinancialAccounts> {
                     val accountsList by accountsViewModel.accounts.collectAsState()
+                    val paymentSuccessMsg by accountsViewModel.paymentSuccessMessage.collectAsState()
                     val agentsList by dashboardViewModel.agents.collectAsState()
                     val totalLimit = remember(agentsList) {
                         agentsList.filter { it.status == AgentStatus.ACTIVE }.sumOf { it.spendEnvelope.amountLimit }
                     }
+                    val userEmail = user?.email ?: "operator@trustmesh.in"
+                    val userName = user?.displayName ?: "Operator"
 
                     LinkedAccountsScreen(
                         accounts = accountsList,
                         totalAgentLimit = totalLimit,
+                        paymentSuccessMessage = paymentSuccessMsg,
                         onLinkBank = {
                             accountsViewModel.startPlaidFlow { mockToken ->
                                 // Plaid Sandbox Mock Linking
                                 accountsViewModel.completePlaidFlow(mockToken)
                             }
                         },
+                        onInitiateRazorpay = { amountInRupees ->
+                            accountsViewModel.initiateRazorpayOrder(amountInRupees) { order ->
+                                launchRazorpayCheckout(
+                                    keyId = order.keyId,
+                                    orderId = order.orderId,
+                                    amountInPaise = order.amountInPaise,
+                                    userEmail = userEmail,
+                                    userName = userName
+                                )
+                            }
+                        },
+                        onClearPaymentSuccess = { accountsViewModel.clearPaymentSuccess() },
                         onRefresh = { accountsViewModel.syncAccounts() }
                     )
                 }
@@ -405,5 +428,60 @@ class MainActivity : FragmentActivity() {
             .build()
 
         biometricPrompt.authenticate(promptInfo)
+    }
+
+    private fun launchRazorpayCheckout(
+        keyId: String,
+        orderId: String,
+        amountInPaise: Long,
+        userEmail: String,
+        userName: String
+    ) {
+        val checkout = Checkout()
+        checkout.setKeyID(keyId)
+
+        try {
+            val options = JSONObject().apply {
+                put("name", "TrustMesh AI Wallet")
+                put("description", "Agent Spend Envelope Top-up")
+                put("currency", "INR")
+                put("amount", amountInPaise)
+                put("order_id", orderId)
+                put("prefill", JSONObject().apply {
+                    put("email", userEmail)
+                    put("name", userName)
+                })
+                put("theme.color", "#1B2A4A")
+            }
+            checkout.open(this, options)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Failed to initialize Razorpay: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    override fun onPaymentSuccess(razorpayPaymentId: String?, paymentData: PaymentData?) {
+        val orderId = paymentData?.orderId ?: ""
+        val signature = paymentData?.signature ?: ""
+        val paymentId = razorpayPaymentId ?: paymentData?.paymentId ?: ""
+
+        if (orderId.isNotEmpty() && paymentId.isNotEmpty() && signature.isNotEmpty()) {
+            accountsViewModel.verifyRazorpayPayment(
+                orderId = orderId,
+                paymentId = paymentId,
+                signature = signature
+            )
+        } else {
+            Toast.makeText(this, "Payment captured: $paymentId", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onPaymentError(code: Int, response: String?, paymentData: PaymentData?) {
+        val errorMsg = try {
+            val json = JSONObject(response ?: "{}")
+            json.optJSONObject("error")?.optString("description") ?: response ?: "Payment cancelled or failed"
+        } catch (e: Exception) {
+            response ?: "Payment cancelled or failed"
+        }
+        Toast.makeText(this, "Razorpay: $errorMsg", Toast.LENGTH_LONG).show()
     }
 }
