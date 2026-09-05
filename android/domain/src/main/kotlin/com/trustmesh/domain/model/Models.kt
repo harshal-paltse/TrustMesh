@@ -130,3 +130,12 @@ data class LinkedAccount(
     val availableBalance: Double,
     val lastSyncedAt: String
 )
+
+@Serializable
+data class PaymentOrder(
+    val orderId: String,
+    val amountInPaise: Long,
+    val currency: String,
+    val keyId: String
+)
+

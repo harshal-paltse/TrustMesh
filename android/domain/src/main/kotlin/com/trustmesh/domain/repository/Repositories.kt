@@ -50,3 +50,9 @@ interface MerchantRepository {
     fun getMerchants(): Flow<List<Merchant>>
     suspend fun searchMerchants(query: String): Result<List<Merchant>>
 }
+
+interface PaymentRepository {
+    suspend fun createPaymentOrder(amountInRupees: Double, agentId: String? = null, escrowId: String? = null): Result<PaymentOrder>
+    suspend fun verifyPayment(razorpayOrderId: String, razorpayPaymentId: String, razorpaySignature: String, agentId: String? = null, escrowId: String? = null): Result<String>
+}
+
