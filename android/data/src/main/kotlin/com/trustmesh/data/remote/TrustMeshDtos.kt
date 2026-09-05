@@ -103,3 +103,34 @@ data class TransactionRequest(
 data class GoogleAuthRequest(
     val idToken: String
 )
+
+@Serializable
+data class CreateOrderRequest(
+    val amountInRupees: Double,
+    val agentId: String? = null,
+    val escrowId: String? = null
+)
+
+@Serializable
+data class CreateOrderResponse(
+    val orderId: String,
+    val amountInPaise: Long,
+    val currency: String,
+    val keyId: String
+)
+
+@Serializable
+data class VerifyPaymentRequest(
+    val razorpayOrderId: String,
+    val razorpayPaymentId: String,
+    val razorpaySignature: String,
+    val agentId: String? = null,
+    val escrowId: String? = null
+)
+
+@Serializable
+data class VerifyPaymentResponse(
+    val status: String,
+    val paymentId: String
+)
+

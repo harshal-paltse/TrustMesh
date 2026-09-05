@@ -35,4 +35,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindMerchantRepository(impl: MerchantRepositoryImpl): MerchantRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPaymentRepository(impl: PaymentRepositoryImpl): PaymentRepository
 }

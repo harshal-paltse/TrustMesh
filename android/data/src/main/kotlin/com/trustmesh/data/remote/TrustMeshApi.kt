@@ -75,4 +75,10 @@ interface TrustMeshApi {
     @POST("auth/google")
     @Headers("No-Auth: true")
     suspend fun googleLogin(@Body request: GoogleAuthRequest): Response<AuthResponse>
+
+    @POST("payments/create-order")
+    suspend fun createPaymentOrder(@Body request: CreateOrderRequest): Response<CreateOrderResponse>
+
+    @POST("payments/verify")
+    suspend fun verifyPayment(@Body request: VerifyPaymentRequest): Response<VerifyPaymentResponse>
 }
