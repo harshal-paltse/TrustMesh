@@ -7,7 +7,7 @@ As autonomous artificial intelligence agents increasingly participate in decentr
 
 ## 1. System Architecture
 
-TrustMesh utilizes a decoupled client-server architecture designed for high availability, transaction security, and real-time updates.
+TrustMesh utilizes a decoupled client-server architecture designed for high availability, transaction security, and real-time UPDATES.
 
 ```mermaid
 graph TD
@@ -97,6 +97,8 @@ The API is fully documented in the Swagger/OpenAPI format. Please refer to [`OPE
 | `/api/v1/agents` | `POST` | JWT | Creates a new agent with defined spend constraints. |
 | `/api/v1/transactions` | `GET` | JWT | Lists recent transactions and processing states. |
 | `/api/v1/ledger` | `GET` | JWT | Returns the cryptographically chained block ledger. |
+| `/api/v1/payments/create-order` | `POST` | JWT | Generates a Razorpay payment order for wallet funding. |
+| `/api/v1/payments/verify` | `POST` | JWT | Cryptographically verifies HMAC-SHA256 signature and settles payment. |
 
 ---
 

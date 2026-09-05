@@ -229,6 +229,64 @@ paths:
         '200':
           description: Resolved held status
 
+  /payments/create-order:
+    post:
+      summary: Create Razorpay Payment Order
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amountInRupees]
+              properties:
+                amountInRupees: { type: number }
+                agentId: { type: string, nullable: true }
+                escrowId: { type: string, nullable: true }
+      responses:
+        '200':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId: { type: string }
+                  amountInPaise: { type: integer }
+                  currency: { type: string }
+                  keyId: { type: string }
+
+  /payments/verify:
+    post:
+      summary: Verify Razorpay Payment Signature
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [razorpayOrderId, razorpayPaymentId, razorpaySignature]
+              properties:
+                razorpayOrderId: { type: string }
+                razorpayPaymentId: { type: string }
+                razorpaySignature: { type: string }
+                agentId: { type: string, nullable: true }
+                escrowId: { type: string, nullable: true }
+      responses:
+        '200':
+          description: Payment verified and settled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string }
+                  paymentId: { type: string }
+
 components:
   securitySchemes:
     bearerAuth:
