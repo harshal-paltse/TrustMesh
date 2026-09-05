@@ -92,3 +92,18 @@ object Merchants : Table("merchants") {
     val internalTrustScore = decimal("internal_trust_score", 4, 2)
     override val primaryKey = PrimaryKey(id)
 }
+
+object PaymentOrders : Table("payment_orders") {
+    val id = uuid("id")
+    val userId = uuid("user_id").references(Users.id)
+    val razorpayOrderId = varchar("razorpay_order_id", 100).uniqueIndex()
+    val amount = decimal("amount", 12, 2)
+    val currency = varchar("currency", 10).default("INR")
+    val status = varchar("status", 50).default("CREATED") // CREATED, PAID, FAILED
+    val razorpayPaymentId = varchar("razorpay_payment_id", 100).nullable()
+    val agentId = uuid("agent_id").references(Agents.id).nullable()
+    val escrowId = uuid("escrow_id").references(EscrowItems.id).nullable()
+    val createdAt = datetime("created_at").defaultExpression(org.jetbrains.exposed.sql.javatime.CurrentDateTime)
+    val updatedAt = datetime("updated_at").nullable()
+    override val primaryKey = PrimaryKey(id)
+}
