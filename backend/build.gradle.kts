@@ -4,12 +4,14 @@ plugins {
     id("application")
 }
 
+
 group = "com.trustmesh"
 version = "1.0.0"
 
 application {
     mainClass.set("com.trustmesh.ApplicationKt")
 }
+
 
 repositories {
     mavenCentral()
