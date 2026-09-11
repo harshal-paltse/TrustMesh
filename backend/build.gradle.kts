@@ -4,6 +4,7 @@ plugins {
     id("application")
 }
 
+
 group = "com.trustmesh"
 version = "1.0.0"
 
