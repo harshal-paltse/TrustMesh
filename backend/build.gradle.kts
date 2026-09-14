@@ -12,7 +12,6 @@ application {
     mainClass.set("com.trustmesh.ApplicationKt")
 }
 
-
 repositories {
     mavenCentral()
 }
