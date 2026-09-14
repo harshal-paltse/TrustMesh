@@ -7,7 +7,6 @@ plugins {
 group = "com.trustmesh"
 version = "1.0.0"
 
-
 application {
     mainClass.set("com.trustmesh.ApplicationKt")
 }
@@ -44,6 +43,7 @@ dependencies {
     // Database mitigration
     implementation("org.flywaydb:flyway-core:10.10.0")
     implementation("org.flywaydb:flyway-database-postgresql:10.10.0")
+
 
     // Redis Client
     implementation("redis.clients:jedis:5.1.2")
