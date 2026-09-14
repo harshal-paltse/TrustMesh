@@ -4,4 +4,4 @@ out/
 .idea/
 *.iml
 .env
-local.properties
+
