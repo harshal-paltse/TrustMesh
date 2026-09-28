@@ -90,6 +90,7 @@ fun Route.accountRoutes() {
                         }
                     }
                 }
+                }
                 call.respond(HttpStatusCode.OK)
             }
         }
