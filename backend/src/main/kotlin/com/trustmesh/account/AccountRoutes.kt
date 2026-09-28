@@ -56,6 +56,7 @@ fun Route.accountRoutes() {
                 } else emptyList()
                 call.respond(accounts)
             }
+            
 
             post("/plaid/link-token") {
                 val linkToken = PlaidClient.createLinkToken()
@@ -66,11 +67,15 @@ fun Route.accountRoutes() {
                 val req = call.receive<PlaidExchangeRequest>()
                 val principal = call.principal<JWTPrincipal>()
                 val userIdStr = principal?.subject ?: ""
+
+                
                 
                 if (userIdStr.isNotEmpty()) {
                     val userId = UUID.fromString(userIdStr)
                     val accessToken = PlaidClient.exchangePublicToken(req.publicToken)
                     val balances = PlaidClient.getBalances(accessToken)
+
+                    
 
                     transaction {
                         balances.forEach { bal ->
@@ -89,4 +94,5 @@ fun Route.accountRoutes() {
             }
         }
     }
+}
 }
