@@ -16,6 +16,7 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*
 
+
 @Serializable
 data class PlaidTokenResponse(val linkToken: String)
 
